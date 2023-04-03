@@ -151,9 +151,9 @@ class MADDPGAgentTrainer(AgentTrainer):
     def action(self, obs):
         return self.act(obs[None])[0]
 
-    def experience(self, obs, act, rew, new_obs, done, terminal):
-        # Store transition in the replay buffer.
-        self.replay_buffer.add(obs, act, rew, new_obs, float(done))
+    def experience(self, data):#obs, message, act, rew, new_obs, done, terminal):
+        # Store transition in the replay buffer. 
+        self.replay_buffer_general.add(data) #obs, message, act, rew, new_obs, float(done)
 
     def preupdate(self):
         self.replay_sample_index = None
@@ -172,10 +172,11 @@ class MADDPGAgentTrainer(AgentTrainer):
         index = self.replay_sample_index
         for i in range(self.n):
             obs, act, rew, obs_next, done = agents[i].replay_buffer.sample_index(index)
+            obs, _, _, _, act, rew, obs_next, _, _, done = agents[i].replay_buffer.sample_index(index)
             obs_n.append(obs)
             obs_next_n.append(obs_next)
             act_n.append(act)
-        obs, act, rew, obs_next, done = self.replay_buffer.sample_index(index)
+        obs, _, _, _, act, rew, obs_next, _, _, done = self.replay_buffer.sample_index(index)
 
         # train q network
         num_sample = 1

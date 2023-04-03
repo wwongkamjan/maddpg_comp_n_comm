@@ -48,7 +48,8 @@ def mlp_model(input, num_outputs, scope, reuse=False, num_units=64, rnn_cell=Non
 def make_env(scenario_name, arglist, benchmark=False):
     from multiagent.environment import MultiAgentEnv
     import multiagent.scenarios as scenarios
-
+    scenario_name = arglist.scenario
+    benchmark = arglist.benchmark
     # load scenario from script
     scenario = scenarios.load(scenario_name + ".py").Scenario()
     # create world
@@ -78,9 +79,9 @@ def get_trainers(env, num_adversaries, obs_shape_n, arglist):
 def train(arglist):
     with U.single_threaded_session():
         # Create environment
-        env = make_env(arglist.scenario, arglist, arglist.benchmark)
+        env = make_env(arglist)
         # Create agent trainers
-        obs_shape_n = [env.observation_space[i].shape for i in range(env.n)]
+        obs_shape_n = [env.observation_space[0].shape for i in range(env.n)]
         num_adversaries = min(env.n, arglist.num_adversaries)
         trainers = get_trainers(env, num_adversaries, obs_shape_n, arglist)
         print('Using good policy {} and adv policy {}'.format(arglist.good_policy, arglist.adv_policy))
@@ -117,7 +118,8 @@ def train(arglist):
             terminal = (episode_step >= arglist.max_episode_len)
             # collect experience
             for i, agent in enumerate(trainers):
-                agent.experience(obs_n[i], action_n[i], rew_n[i], new_obs_n[i], done_n[i], terminal)
+                # agent.experience(obs_n[i], action_n[i], rew_n[i], new_obs_n[i], done_n[i], terminal)
+                agent.experience([obs_n[i], None, None, None, action_n[i], rew_n[i], new_obs_n[i], None, None,done_n[i]])
             obs_n = new_obs_n
 
             for i, rew in enumerate(rew_n):
