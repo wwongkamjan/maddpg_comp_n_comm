@@ -82,11 +82,11 @@ def get_trainers(arglist, env, num_adversaries, obs_shape_n, message_shape_n,tar
     trainer = CMADDPGAgentTrainer
     for i in range(num_adversaries):
         trainers.append(trainer(
-            "agent", model, obs_shape_n, message_shape_n, target_loc_space_n, env.action_space, i, env.n_agents_obs, arglist,
+            "agent_%d" % i, model, obs_shape_n, message_shape_n, target_loc_space_n, env.action_space, i, env.n_agents_obs, arglist,
             local_q_func=(arglist.adv_policy=='ddpg')))
     for i in range(num_adversaries, env.n_agents):
         trainers.append(trainer(
-            "agent", model, obs_shape_n, message_shape_n, target_loc_space_n, env.action_space, i, env.n_agents_obs, arglist,
+            "agent_%d" % i, model, obs_shape_n, message_shape_n, target_loc_space_n, env.action_space, i, env.n_agents_obs, arglist,
             local_q_func=(arglist.good_policy=='ddpg')))
     return trainers
 
